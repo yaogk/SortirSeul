@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\SortieRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -46,6 +48,34 @@ class Sortie
      * @ORM\Column(type="text", nullable=true)
      */
     private $infosSortie;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Etat::class, inversedBy="sorties")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $etat;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Campus::class, inversedBy="sorties")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $campus;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Participant::class, inversedBy="sortiesCreees")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $organisateur;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Participant::class, inversedBy="estInscrit")
+     */
+    private $participantsInscrits;
+
+    public function __construct()
+    {
+        $this->participantsInscrits = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -120,6 +150,66 @@ class Sortie
     public function setInfosSortie(?string $infosSortie): self
     {
         $this->infosSortie = $infosSortie;
+
+        return $this;
+    }
+
+    public function getEtat(): ?Etat
+    {
+        return $this->etat;
+    }
+
+    public function setEtat(?Etat $etat): self
+    {
+        $this->etat = $etat;
+
+        return $this;
+    }
+
+    public function getCampus(): ?Campus
+    {
+        return $this->campus;
+    }
+
+    public function setCampus(?Campus $campus): self
+    {
+        $this->campus = $campus;
+
+        return $this;
+    }
+
+    public function getOrganisateur(): ?Participant
+    {
+        return $this->organisateur;
+    }
+
+    public function setOrganisateur(?Participant $organisateur): self
+    {
+        $this->organisateur = $organisateur;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Participant[]
+     */
+    public function getParticipantsInscrits(): Collection
+    {
+        return $this->participantsInscrits;
+    }
+
+    public function addParticipantsInscrit(Participant $participantsInscrit): self
+    {
+        if (!$this->participantsInscrits->contains($participantsInscrit)) {
+            $this->participantsInscrits[] = $participantsInscrit;
+        }
+
+        return $this;
+    }
+
+    public function removeParticipantsInscrit(Participant $participantsInscrit): self
+    {
+        $this->participantsInscrits->removeElement($participantsInscrit);
 
         return $this;
     }
